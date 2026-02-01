@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    container_name: lms_api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    volumes:
+      - ./config/config.yaml:/app/config/config.yaml
+    environment:
+      APP_ENV: docker
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    container_name: lms_postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: lms
+      POSTGRES_USER: lms_user
+      POSTGRES_PASSWORD: lms_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

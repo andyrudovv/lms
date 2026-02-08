@@ -16,5 +16,8 @@ func RegisterRoutes(r *gin.Engine, database *db.PostgresConnector) {
 		routes.Attendance(api, database)
 		routes.Users(api, database)
 		routes.Submissions(api, database)
+		routes.Content(api, database)
+		routes.Enrollment(api, database)
+		routes.Progress(api, database)
 	}
 }

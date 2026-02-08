@@ -12,6 +12,9 @@ func RegisterRoutes(r *gin.Engine, database *db.PostgresConnector) {
 	api := r.Group("/api/v1")
 	{
 		routes.Auth(api, database)
-		routes.Courses(api)
+		routes.Courses(api, database)
+		routes.Attendance(api, database)
+		routes.Users(api, database)
+		routes.Submissions(api, database)
 	}
 }

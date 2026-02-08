@@ -18,3 +18,18 @@ type User struct {
     Email     string `json:"email"`
     RoleID    int    `json:"role_id"`
 }
+
+type Enrollment struct {
+    ID         int       `json:"id"`
+    UserID     int       `json:"user_id"`
+    CourseID   int       `json:"course_id"`
+    EnrolledAt time.Time `json:"enrolled_at"`
+}
+
+type Progress struct {
+    CourseID        int     `json:"course_id"`
+    StudentID       int     `json:"student_id"`
+    CompletedWeeks  int     `json:"completed_weeks"`
+    TotalWeeks      int     `json:"total_weeks"`
+    PercentComplete float64 `json:"percent_complete"`
+}

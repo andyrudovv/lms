@@ -1,87 +1,74 @@
 package config
 
 import (
-	"fmt"
-	"strings"
-	"time"
+	"errors"
+	"os"
 
-	"github.com/spf13/viper"
+	"gopkg.in/yaml.v3"
 )
 
 type Config struct {
-	App      AppConfig      `mapstructure:"app"`
-	HTTP     HTTPConfig     `mapstructure:"http"`
-	Database DatabaseConfig `mapstructure:"database"`
-	Logger   LoggerConfig   `mapstructure:"logger"`
-	Shutdown ShutdownConfig `mapstructure:"shutdown"`
-	TLS      TLSConfig      `mapstructure:"tls"`
+	App struct {
+		Port int `yaml:"port"`
+	} `yaml:"app"`
+
+	DB struct {
+		DSN                string `yaml:"dsn"`
+		MaxConns           int32  `yaml:"max_conns"`
+		MinConns           int32  `yaml:"min_conns"`
+		MaxConnIdleMinutes int    `yaml:"max_conn_idle_minutes"`
+	} `yaml:"db"`
+
+	JWT struct {
+		Secret           string `yaml:"secret"`
+		AccessTTLMinutes int    `yaml:"access_ttl_minutes"`
+	} `yaml:"jwt"`
+
+	Migrations struct {
+		Dir    string `yaml:"dir"`
+		AutoUp bool   `yaml:"auto_up"`
+	} `yaml:"migrations"`
 }
 
-type AppConfig struct {
-	Name        string `mapstructure:"name"`
-	Environment string `mapstructure:"environment"`
-}
-
-type HTTPConfig struct {
-	Host              string        `mapstructure:"host"`
-	Port              int           `mapstructure:"port"`
-	ReadTimeout       time.Duration `mapstructure:"read_timeout"`
-	ReadHeaderTimeout time.Duration `mapstructure:"read_header_timeout"`
-	WriteTimeout      time.Duration `mapstructure:"write_timeout"`
-	IdleTimeout       time.Duration `mapstructure:"idle_timeout"`
-	MaxHeaderBytes    int           `mapstructure:"max_header_bytes"`
-}
-
-type DatabaseConfig struct {
-	Host         string `mapstructure:"host"`
-	Port         int    `mapstructure:"port"`
-	User         string `mapstructure:"user"`
-	Password     string `mapstructure:"password"`
-	Name         string `mapstructure:"name"`
-	SSLMode      string `mapstructure:"ssl_mode"`
-	MaxOpenConns int    `mapstructure:"max_open_conns"`
-	MaxIdleConns int    `mapstructure:"max_idle_conns"`
-}
-
-type LoggerConfig struct {
-	Level string `mapstructure:"level"`
-}
-
-type ShutdownConfig struct {
-	Timeout time.Duration `mapstructure:"timeout"`
-}
-
-type TLSConfig struct {
-	Enabled    bool   `mapstructure:"enabled"`
-	CertFile   string `mapstructure:"cert_file"`
-	KeyFile    string `mapstructure:"key_file"`
-	MinVersion string `mapstructure:"min_version"`
-}
-
-func LoadConfig(path string) (*Config, error) {
-	v := viper.New()
-	v.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
-	v.AutomaticEnv()
-	v.AddConfigPath(path)
-	v.SetConfigName("config")
-	v.SetConfigType("yaml")
-
-	if err := v.ReadInConfig(); err != nil {
-		return nil, fmt.Errorf("read config error: %w", err)
+func Load(path string) (Config, error) {
+	if path == "" {
+		path = "config.yaml"
+	}
+	b, err := os.ReadFile(path)
+	if err != nil {
+		return Config{}, err
 	}
 
 	var cfg Config
-	if err := v.Unmarshal(&cfg); err != nil {
-		return nil, fmt.Errorf("unmarshal config error: %w", err)
+	if err := yaml.Unmarshal(b, &cfg); err != nil {
+		return Config{}, err
 	}
 
-	return &cfg, nil
-}
-
-func MustLoadConfig(path string) *Config {
-	cfg, err := LoadConfig(path)
-	if err != nil {
-		panic(err)
+	if cfg.App.Port == 0 {
+		return Config{}, errors.New("config: app.port is required")
 	}
-	return cfg
+	if cfg.DB.DSN == "" {
+		return Config{}, errors.New("config: db.dsn is required")
+	}
+	if cfg.JWT.Secret == "" {
+		return Config{}, errors.New("config: jwt.secret is required")
+	}
+	if cfg.JWT.AccessTTLMinutes == 0 {
+		cfg.JWT.AccessTTLMinutes = 60
+	}
+	if cfg.Migrations.Dir == "" {
+		cfg.Migrations.Dir = "migrations"
+	}
+
+	if cfg.DB.MaxConns == 0 {
+		cfg.DB.MaxConns = 10
+	}
+	if cfg.DB.MinConns == 0 {
+		cfg.DB.MinConns = 1
+	}
+	if cfg.DB.MaxConnIdleMinutes == 0 {
+		cfg.DB.MaxConnIdleMinutes = 5
+	}
+
+	return cfg, nil
 }

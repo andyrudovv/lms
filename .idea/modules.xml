@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/newmoodlesystem.iml" filepath="$PROJECT_DIR$/.idea/newmoodlesystem.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/lms_backendd.iml" filepath="$PROJECT_DIR$/.idea/lms_backendd.iml" />
     </modules>
   </component>
 </project>

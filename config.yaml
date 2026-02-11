@@ -1,0 +1,16 @@
+app:
+  port: 8080
+
+db:
+  dsn: "postgres://postgres:toor@localhost:5432/aitu_lms?sslmode=disable"
+  max_conns: 10
+  min_conns: 1
+  max_conn_idle_minutes: 5
+
+jwt:
+  secret: "CHANGE_ME_SUPER_SECRET"
+  access_ttl_minutes: 60
+
+migrations:
+  dir: "migrations"
+  auto_up: true

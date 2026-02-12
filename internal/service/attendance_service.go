@@ -40,7 +40,6 @@ func (s *AttendanceService) ListByCourse(ctx context.Context, courseID int) ([]m
 	}
 	return s.repo.ListByCourse(ctx, courseID)
 }
-
 func (s *AttendanceService) ListByStudent(ctx context.Context, studentID int, courseID int) ([]model.Attendance, error) {
 	if studentID <= 0 {
 		return nil, errors.New("student_id must be > 0")

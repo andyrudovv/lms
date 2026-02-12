@@ -35,3 +35,14 @@ JWT header:
 - POST /api/v1/courses/:id/attendance -> mark attendance (admin/teacher)
 - GET /api/v1/courses/:id/attendance  -> list course attendance (admin/teacher)
 - GET /api/v1/my/attendance?course_id= -> student attendance (by token)
+
+  
+---
+
+# Frontend (ReactJS)
+
+```
+cd frontend
+npm i
+npm run dev
+```

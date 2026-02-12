@@ -54,10 +54,14 @@ func NewRouter(
 		protected.GET("/my/courses", middleware.RequireRoles("admin", "teacher", "student"), courseH.MyCourses)
 		protected.POST("/courses/:id/enroll", middleware.RequireRoles("admin", "teacher"), courseH.Enroll)
 
+		protected.GET("/courses/:id/students", middleware.RequireRoles("admin", "teacher"), courseH.GetStudents)
+		protected.GET("/courses/:id/available-students", middleware.RequireRoles("admin", "teacher"), courseH.GetAvailableStudents)
+
 		// attendance
 		protected.POST("/courses/:id/attendance", middleware.RequireRoles("admin", "teacher"), attH.Mark)
 		protected.GET("/courses/:id/attendance", middleware.RequireRoles("admin", "teacher"), attH.ListByCourse)
 		protected.GET("/my/attendance", middleware.RequireRoles("admin", "teacher", "student"), attH.MyAttendance)
+	
 	}
 
 	return r

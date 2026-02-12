@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 
@@ -52,6 +53,9 @@ func main() {
 	courseH := handlers.NewCourseHandler(courseSvc)
 	attH := handlers.NewAttendanceHandler(attSvc)
 
+	InitDB(context.Background(), pool) // Initialize database tables and default roles
+	InitDefaultUsers(context.Background(), pool) // Initialize default users before starting the server
+	
 	r := httpapi.NewRouter(authSvc, authH, userH, courseH, attH)
 
 	addr := fmt.Sprintf(":%d", cfg.App.Port)

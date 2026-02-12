@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"log"
 	"strconv"
 
 	"lms-backend/internal/domain/model"
@@ -34,6 +35,7 @@ func (r *AttendanceRepo) ListByCourse(ctx context.Context, courseID int) ([]mode
 		courseID,
 	)
 	if err != nil {
+		log.Println("Error listing attendance by course:", err)
 		return nil, err
 	}
 	defer rows.Close()

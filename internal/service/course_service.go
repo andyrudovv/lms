@@ -53,3 +53,25 @@ func (s *CourseService) Enroll(ctx context.Context, courseID int, studentID int)
 	}
 	return s.enrollments.Enroll(ctx, courseID, studentID)
 }
+
+func (s *CourseService) Unenroll(ctx context.Context, courseID int, studentID int) error {
+	if courseID <= 0 || studentID <= 0 {
+		return errors.New("course_id and student_id must be > 0")
+	}
+	return s.enrollments.Unenroll(ctx, courseID, studentID)
+}
+
+
+func (s *CourseService) GetStudents(ctx context.Context, courseID int) ([]model.User, error) {
+	if courseID <= 0 {
+		return nil, errors.New("course_id must be > 0")
+	}
+	return s.enrollments.ListEnrolledStudents(ctx, courseID)
+}
+
+func (s *CourseService) GetAvailableStudents(ctx context.Context, courseID int) ([]model.User, error) {
+	if courseID <= 0 {
+		return nil, errors.New("course_id must be > 0")
+	}
+	return s.enrollments.ListAvailableStudents(ctx, courseID)
+}

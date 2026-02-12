@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 	"strconv"
 
@@ -56,8 +57,14 @@ func (h *AttendanceHandler) ListByCourse(c *gin.Context) {
 		return
 	}
 
+	if err != nil || courseID <= 0 {
+		responder.Fail(c, http.StatusBadRequest, "invalid course id")
+		return
+	}
+
 	items, err := h.svc.ListByCourse(c.Request.Context(), courseID)
 	if err != nil {
+		log.Println("Error listing attendance by course:", err)
 		responder.Fail(c, http.StatusInternalServerError, err.Error())
 		return
 	}

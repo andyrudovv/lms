@@ -2,9 +2,11 @@ package repository
 
 import (
 	"context"
+	"errors"
 
 	"lms-backend/internal/domain/model"
 
+	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -23,7 +25,14 @@ func (r *UserRepo) Create(ctx context.Context, u model.User) (int, error) {
 		 VALUES ($1,$2,$3,$4) RETURNING id`,
 		u.Email, u.PasswordHash, u.FullName, u.RoleID,
 	).Scan(&id)
-	return id, err
+	if err != nil {
+		var pgErr *pgconn.PgError
+		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+			return 0, errors.New("email already registered")
+		}
+		return 0, err
+	}
+	return id, nil
 }
 
 func (r *UserRepo) List(ctx context.Context) ([]model.User, error) {

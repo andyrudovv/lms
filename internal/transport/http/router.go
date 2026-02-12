@@ -61,7 +61,7 @@ func NewRouter(
 		protected.POST("/courses/:id/attendance", middleware.RequireRoles("admin", "teacher"), attH.Mark)
 		protected.GET("/courses/:id/attendance", middleware.RequireRoles("admin", "teacher"), attH.ListByCourse)
 		protected.GET("/my/attendance", middleware.RequireRoles("admin", "teacher", "student"), attH.MyAttendance)
-	
+
 	}
 
 	return r
